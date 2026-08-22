@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+jq -e '
+  .schemaVersion == 1 and
+  .id == "org.omarchyforge.handoff" and
+  .kinds == ["bar-widget"] and
+  .entryPoints.barWidget == "Panel.qml"
+' "$repo_root/manifest.json" >/dev/null
+jq -e . "$repo_root/demo/fixtures.json" >/dev/null
+bash -n "$repo_root/demo/run"
+
+if command -v omarchy >/dev/null 2>&1; then
+  omarchy plugin validate "$repo_root"
+else
+  echo "omarchy is unavailable; skipped official plugin validation" >&2
+fi
+
+if find "$repo_root" -name .git -prune -o -type l -print -quit | grep -q .; then
+  echo "symlinks are not allowed in the plugin project" >&2
+  exit 1
+fi
+
+if grep -REn 'sh -c|bash -c|curl|wget|sudo|pkexec' \
+  "$repo_root/Panel.qml" "$repo_root/services"; then
+  echo "unsafe or network-capable command pattern found" >&2
+  exit 1
+fi
+
+grep -qF 'atomicWrites: true' "$repo_root/services/DataService.qml"
+grep -qF '["git", "-C", candidate' "$repo_root/services/DataService.qml"
+grep -qF '["xdg-terminal-exec", "--dir=" + project.path]' "$repo_root/Panel.qml"
+grep -qF 'XDG_DATA_HOME' "$repo_root/services/DataService.qml"
+
+echo "plugin checks passed"

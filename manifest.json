@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "org.omarchyforge.handoff",
+  "name": "Handoff",
+  "version": "0.1.0",
+  "author": "Omarchy Forge contributors",
+  "license": "MIT",
+  "description": "Pick up Git projects where you left off.",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Handoff",
+    "description": "Pick up Git projects where you left off.",
+    "category": "Development",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "showDirtyIndicator": true
+    },
+    "schema": [{
+      "key": "showDirtyIndicator",
+      "type": "boolean",
+      "label": "Show uncommitted-change status",
+      "defaultValue": true
+    }]
+  }
+}

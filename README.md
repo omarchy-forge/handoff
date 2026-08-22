@@ -1,0 +1,108 @@
+# Handoff
+
+Pick up Git projects where you left off.
+
+Handoff is a local-first Omarchy bar widget for pinning projects, recording one
+clear next step, seeing current Git context, and reopening the project in a
+terminal. It is the flagship reference plugin built with Omarchy Forge.
+
+Handoff is an independent community project. It is not affiliated with or
+endorsed by Omarchy, Basecamp, 37signals, or DHH.
+
+## MVP features
+
+- Pin a project by entering its local directory.
+- Save one next-step note per pinned project.
+- Show the branch, clean/dirty state, latest commit subject, and check time.
+- Open the selected project in the configured terminal.
+- Persist data atomically under
+  `$XDG_DATA_HOME/omarchy-handoff/state.json` (or
+  `~/.local/share/omarchy-handoff/state.json`).
+- Refresh entirely through local, argument-safe Git commands.
+
+Handoff has no server, account, API key, telemetry, analytics, or required
+network access. It does not modify project files or Omarchy's `shell.json`.
+
+## Requirements
+
+- Omarchy 4 with manifest schema 1 and Quickshell plugin support.
+- Git.
+- `xdg-terminal-exec`, supplied by the verified Omarchy environment.
+
+## Configuration
+
+The bar-widget setting **Show uncommitted-change status** controls whether the
+clean/dirty label is shown. Project paths and notes are managed inside Handoff
+and remain in its XDG data file rather than Omarchy configuration.
+
+## Install a reviewed local checkout
+
+Plugins execute unsandboxed inside the long-lived Omarchy Shell process. Review
+and trust the source before enabling it.
+
+```bash
+omarchy plugin add "$PWD" --enable
+```
+
+## Use
+
+1. Open Handoff from the bar.
+2. Enter an absolute project path or a path beginning with `~/`, then select
+   **Pin**.
+3. Select a pinned project and write its next step.
+4. Select **Save note** or **Open terminal**.
+
+Right-click the bar icon or press `R` while the panel is focused to refresh Git
+metadata. Press `Enter` to open the selected project and `Esc` to close.
+
+Unpinning removes only Handoff's record. It never deletes or edits the project.
+
+## Development
+
+```bash
+./tests/run
+./demo/run ready
+./demo/run empty
+./demo/run error
+```
+
+The demo uses fictional in-memory records through shell IPC. It does not write
+Handoff data, restart the shell, or alter Omarchy configuration.
+
+A representative preview image is not yet available. Add one only after the
+MVP has completed a reviewed visual session on the verified Omarchy runtime.
+
+## Update
+
+For a Git-managed installation:
+
+```bash
+omarchy plugin update org.omarchyforge.handoff
+```
+
+## Removal
+
+```bash
+omarchy plugin remove org.omarchyforge.handoff
+```
+
+Removing the plugin does not automatically delete its local state file. After
+reviewing its contents, remove `$XDG_DATA_HOME/omarchy-handoff/` manually if the
+saved notes are no longer needed.
+
+## Privacy and security
+
+Handoff stores the local project path, note, branch, dirty-state flag, commit
+metadata, and timestamps. Notes may be sensitive; the state file remains local
+and is created using the user's normal permissions. Do not place credentials or
+secrets in notes.
+
+Git and terminal commands use argument arrays rather than interpolated shell
+commands. Handoff never executes project code, hooks, build scripts, or QML.
+Normal use performs no network request, even when a Git remote exists.
+
+See [SECURITY.md](SECURITY.md) for reporting and trust boundaries.
+
+## License
+
+MIT © Omarchy Forge contributors

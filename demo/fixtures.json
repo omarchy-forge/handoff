@@ -1,0 +1,10 @@
+{
+  "ready": {
+    "name": "forge",
+    "branch": "feat/handoff",
+    "dirty": true,
+    "note": "Review the release checklist and prepare the next milestone."
+  },
+  "empty": [],
+  "error": "Fictional demo error: Git metadata could not be refreshed."
+}
