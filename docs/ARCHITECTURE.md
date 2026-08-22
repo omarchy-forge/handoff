@@ -47,6 +47,11 @@ Demo states are in-memory and suppress persistence and Git refreshes. They are
 safe to use against an installed development checkout without changing saved
 Handoff data.
 
+The Forge `v0.2.0` runtime harness copies the reviewed tree into temporary
+HOME/XDG paths, links only the installed read-only Omarchy QML modules, and
+runs in a bounded process group. `forgeScreenshotTarget` names the panel-only
+content item rendered for fictional screenshots; no desktop capture is used.
+
 ## Deliberate limits
 
 - Projects are pinned by path; broad filesystem scanning is out of scope.

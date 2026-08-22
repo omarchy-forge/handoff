@@ -70,6 +70,9 @@ Unpinning removes only Handoff's record. It never deletes or edits the project.
 ./demo/run ready
 ./demo/run empty
 ./demo/run error
+omaforge dev . --trust-plugin-code --state ready
+omaforge dev . --trust-plugin-code --state ready --watch
+omaforge screenshot . --trust-plugin-code --state ready --output /tmp/handoff-preview.png
 ./scripts/release-check 0.1.0
 ```
 
@@ -79,6 +82,12 @@ Handoff data, restart the shell, or alter Omarchy configuration.
 The preview uses fictional in-memory data captured during a reviewed visual
 session on Omarchy 4. No project note or path from the user's saved state is
 shown.
+
+Forge `v0.2.0` development commands run Handoff in a temporary HOME/XDG
+environment without installing it or connecting to the live shell. Screenshot
+output contains only the declared panel content and refuses existing paths.
+Private CI uses the public Forge `v0.2.0` Action for deterministic static checks
+but never executes the runtime harness or plugin QML.
 
 ## Update
 

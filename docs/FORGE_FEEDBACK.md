@@ -17,5 +17,8 @@ It also exposed these follow-up opportunities for Forge:
    isolated Quickshell runtime. Handoff added that verification manually during
    development; Forge could eventually provide a reusable harness.
 
-These are observations, not shipped Forge behavior. Any Forge changes should
-be designed and reviewed in the Forge repository as a separate milestone.
+All three observations have now been addressed or deliberately resolved in
+Forge: `.git`-only targets are supported, the service-plus-widget template was
+deferred for lack of a stable third-party contract, and Forge `v0.2.0` ships
+the isolated runtime, fictional-state, screenshot, and watch workflow adopted
+by Handoff here.

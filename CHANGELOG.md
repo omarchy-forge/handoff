@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Adopt Forge `v0.2.0` isolated runtime, fictional-state, plugin-only
+  screenshot, and watch development contracts without changing live behavior.
+- Pin private CI to the public Forge `v0.2.0` Action and CLI release.
+
 ## [0.1.0] - 2026-08-22
 
 - Add the local-first Handoff MVP for pinned Git projects and next-step notes.
