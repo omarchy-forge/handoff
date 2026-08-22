@@ -25,9 +25,10 @@ endorsed by Omarchy, Basecamp, 37signals, or DHH.
 Handoff has no server, account, API key, telemetry, analytics, or required
 network access. It does not modify project files or Omarchy's `shell.json`.
 
-Version `0.1.0` is the first reviewed release line. Repository tags and GitHub
-releases are the authoritative record of availability. Marketplace submission,
-repository visibility, and public announcements remain separate decisions.
+Version `0.1.1` is the current reviewed release line. Repository tags and
+GitHub releases are the authoritative record of availability. Marketplace
+submission, repository visibility, and public announcements remain separate
+decisions.
 
 ## Requirements
 
@@ -73,7 +74,7 @@ Unpinning removes only Handoff's record. It never deletes or edits the project.
 omaforge dev . --trust-plugin-code --state ready
 omaforge dev . --trust-plugin-code --state ready --watch
 omaforge screenshot . --trust-plugin-code --state ready --output /tmp/handoff-preview.png
-./scripts/release-check 0.1.0
+./scripts/release-check 0.1.1
 ```
 
 The demo uses fictional in-memory records through shell IPC. It does not write
