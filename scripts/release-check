@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+expected_version="${1:-$(jq -r '.version' "$repo_root/manifest.json")}"
+
+if [[ ! $expected_version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  echo "release-check: expected X.Y.Z, got '$expected_version'" >&2
+  exit 2
+fi
+
+manifest_version="$(jq -r '.version' "$repo_root/manifest.json")"
+if [[ $manifest_version != "$expected_version" ]]; then
+  echo "release-check: manifest version '$manifest_version' does not match '$expected_version'" >&2
+  exit 1
+fi
+
+grep -Eq "^## \[$expected_version\] - (Unreleased|[0-9]{4}-[0-9]{2}-[0-9]{2})$" \
+  "$repo_root/CHANGELOG.md" || {
+  echo "release-check: changelog has no release heading for $expected_version" >&2
+  exit 1
+}
+
+notes="$repo_root/docs/RELEASE_NOTES_${expected_version}.md"
+test -f "$notes" || {
+  echo "release-check: missing $notes" >&2
+  exit 1
+}
+grep -q "Handoff $expected_version release notes" "$notes"
+
+private_key_pattern='BEGIN '"'(RSA|OPENSSH|EC) PRIVATE KEY'"
+token_pattern='gh'"'[pousr]_[A-Za-z0-9_]+'"
+if grep -REn \
+  --exclude-dir=.git \
+  --exclude='*.png' \
+  "$private_key_pattern|$token_pattern" \
+  "$repo_root"; then
+  echo "release-check: possible credential material found" >&2
+  exit 1
+fi
+
+"$repo_root/tests/run"
+
+if command -v omaforge >/dev/null 2>&1; then
+  omaforge check "$repo_root"
+else
+  echo "omaforge is unavailable; skipped Forge check" >&2
+fi
+
+echo "release candidate $expected_version checks passed"

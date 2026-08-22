@@ -32,6 +32,15 @@ Item {
 
   function clone(value) { return JSON.parse(JSON.stringify(value)) }
 
+  function gitCommand(path, arguments_) {
+    return [
+      "git",
+      "-c", "core.hooksPath=/dev/null",
+      "-c", "core.fsmonitor=false",
+      "-C", path
+    ].concat(arguments_)
+  }
+
   function setDemoState(nextState) {
     var candidate = String(nextState || "")
     if (candidate !== "ready" && candidate !== "empty" && candidate !== "error") return "invalid"
@@ -135,7 +144,7 @@ Item {
     pendingPath = candidate
     notice = "Checking Git project…"
     validateProcess.output = ""
-    validateProcess.command = ["git", "-C", candidate, "rev-parse", "--show-toplevel"]
+    validateProcess.command = gitCommand(candidate, ["rev-parse", "--show-toplevel"])
     validateProcess.running = true
   }
 
@@ -218,7 +227,7 @@ Item {
     statusOutput = ""
     var project = projects[refreshIndex]
     statusProcess.output = ""
-    statusProcess.command = ["git", "-C", project.path, "status", "--porcelain=v2", "--branch"]
+    statusProcess.command = gitCommand(project.path, ["status", "--porcelain=v2", "--branch"])
     statusProcess.running = true
   }
 
@@ -306,7 +315,8 @@ Item {
       root.applyStatus(output)
       var project = root.projects[root.refreshIndex]
       logProcess.output = ""
-      logProcess.command = ["git", "-C", project.path, "log", "-1", "--format=%H%x1f%s%x1f%cI"]
+      logProcess.command = root.gitCommand(project.path,
+        ["log", "-1", "--format=%H%x1f%s%x1f%cI"])
       logProcess.running = true
     }
   }

@@ -30,7 +30,10 @@ Handoff invokes only:
 - `xdg-terminal-exec --dir=<path>` when the user explicitly opens a project.
 
 Every command uses a QML argument array. Project paths are never interpolated
-into a shell program. Handoff does not execute repository hooks, builds,
+into a shell program. Every Git invocation also sets
+`core.hooksPath=/dev/null` and `core.fsmonitor=false`, preventing repository or
+user configuration from turning status inspection into external hook or
+filesystem-monitor execution. Handoff does not execute repository builds,
 scripts, or QML and does not inspect remotes.
 
 ## Runtime behavior
