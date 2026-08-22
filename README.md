@@ -25,9 +25,9 @@ endorsed by Omarchy, Basecamp, 37signals, or DHH.
 Handoff has no server, account, API key, telemetry, analytics, or required
 network access. It does not modify project files or Omarchy's `shell.json`.
 
-Version `0.1.0` is currently a final private release candidate. No Handoff
-version has been tagged, released, submitted to a marketplace, or announced
-publicly.
+Version `0.1.0` is the first reviewed release line. Repository tags and GitHub
+releases are the authoritative record of availability. Marketplace submission,
+repository visibility, and public announcements remain separate decisions.
 
 ## Requirements
 
