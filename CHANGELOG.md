@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.1.0] - Unreleased
+## [0.1.0] - 2026-08-22
 
 - Add the local-first Handoff MVP for pinned Git projects and next-step notes.
 - Persist project context atomically in the user's XDG data directory.
