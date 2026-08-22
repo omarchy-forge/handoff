@@ -85,8 +85,9 @@ Item {
   function load(raw) {
     if (demoActive) return
     var loaded = []
+    var source = String(raw || "").trim()
     try {
-      var parsed = JSON.parse(String(raw || ""))
+      var parsed = source === "" ? { version: 1, projects: [] } : JSON.parse(source)
       if (parsed && parsed.version === 1 && Array.isArray(parsed.projects)) {
         for (var i = 0; i < parsed.projects.length; i++) {
           var project = normalizedProject(parsed.projects[i])
