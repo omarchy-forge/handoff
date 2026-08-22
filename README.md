@@ -9,6 +9,8 @@ terminal. It is the flagship reference plugin built with Omarchy Forge.
 Handoff is an independent community project. It is not affiliated with or
 endorsed by Omarchy, Basecamp, 37signals, or DHH.
 
+![Handoff ready state with fictional project data](assets/preview.png)
+
 ## MVP features
 
 - Pin a project by entering its local directory.
@@ -69,8 +71,9 @@ Unpinning removes only Handoff's record. It never deletes or edits the project.
 The demo uses fictional in-memory records through shell IPC. It does not write
 Handoff data, restart the shell, or alter Omarchy configuration.
 
-A representative preview image is not yet available. Add one only after the
-MVP has completed a reviewed visual session on the verified Omarchy runtime.
+The preview uses fictional in-memory data captured during a reviewed visual
+session on Omarchy 4. No project note or path from the user's saved state is
+shown.
 
 ## Update
 
