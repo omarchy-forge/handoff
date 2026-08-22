@@ -17,6 +17,7 @@ Panel {
   readonly property var project: handoff.selectedProject
   readonly property bool showDirtyIndicator:
     !settings || settings.showDirtyIndicator !== false
+  property Item forgeScreenshotTarget: content
 
   implicitWidth: button.implicitWidth
   implicitHeight: button.implicitHeight
@@ -39,6 +40,7 @@ Panel {
     root.close()
   }
   function setDemoState(state) { return handoff.setDemoState(state) }
+  function refresh() { handoff.refreshAll() }
 
   IpcHandler {
     target: root.ipcTarget
