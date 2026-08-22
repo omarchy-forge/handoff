@@ -1,6 +1,6 @@
 # Handoff 0.1.0 release notes
 
-Status: final release candidate; not released.
+Release target: `v0.1.0` from the reviewed `main` commit.
 
 Handoff 0.1.0 is the first local-first project handoff widget for Omarchy 4.
 
