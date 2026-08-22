@@ -29,5 +29,11 @@ Forge checks passed. Ready, empty, and error states and a panel-only screenshot
 passed in the isolated Quickshell runtime. Private CI passed with Forge
 `v0.2.0`.
 
+An independent exact-tag clone was installed with the official Omarchy plugin
+command, exercised in ready, empty, and error states, and removed. Test data
+was deleted, `shell.json` was restored byte-for-byte (SHA-256
+`802fa2600cac1cd2971c48769661432a8f30eb5beb2eadb63f0356a913172f9f`),
+and shell IPC returned `ok` afterward.
+
 The repository remains private. This release does not submit Handoff to a
 marketplace, announce it publicly, or authorize ongoing installation.
