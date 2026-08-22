@@ -25,6 +25,9 @@ endorsed by Omarchy, Basecamp, 37signals, or DHH.
 Handoff has no server, account, API key, telemetry, analytics, or required
 network access. It does not modify project files or Omarchy's `shell.json`.
 
+Version `0.1.0` is currently a private release candidate. No Handoff version
+has been tagged, released, submitted to a marketplace, or announced publicly.
+
 ## Requirements
 
 - Omarchy 4 with manifest schema 1 and Quickshell plugin support.
@@ -66,6 +69,7 @@ Unpinning removes only Handoff's record. It never deletes or edits the project.
 ./demo/run ready
 ./demo/run empty
 ./demo/run error
+./scripts/release-check 0.1.0
 ```
 
 The demo uses fictional in-memory records through shell IPC. It does not write
@@ -101,8 +105,9 @@ and is created using the user's normal permissions. Do not place credentials or
 secrets in notes.
 
 Git and terminal commands use argument arrays rather than interpolated shell
-commands. Handoff never executes project code, hooks, build scripts, or QML.
-Normal use performs no network request, even when a Git remote exists.
+commands. Handoff disables Git hooks and filesystem monitors for metadata
+inspection; it never executes project code, build scripts, or QML. Normal use
+performs no network request, even when a Git remote exists.
 
 See [SECURITY.md](SECURITY.md) for reporting and trust boundaries.
 

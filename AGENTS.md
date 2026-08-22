@@ -14,3 +14,5 @@
 - Add tests for behavior and run official validation plus Forge checks.
 - Do not push, publish, release, deploy, change visibility, install the plugin,
   or announce it without explicit user approval.
+- Treat release notes and checks as preparation only. Never create or push a
+  tag or GitHub release without approval for the exact version and commit.

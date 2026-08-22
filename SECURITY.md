@@ -15,7 +15,10 @@ or project QML; modify project files; alter Omarchy configuration; install
 packages; use privilege elevation; or require network access.
 
 The project path is passed as one argument to `git -C` and to
-`xdg-terminal-exec --dir`. It is never interpolated into a shell command.
+`xdg-terminal-exec --dir`. It is never interpolated into a shell command. Git
+commands override `core.hooksPath` with `/dev/null` and disable
+`core.fsmonitor`, preventing project or user configuration from causing an
+external hook or filesystem-monitor command during inspection.
 
 The state file can contain sensitive project paths and notes. It belongs under
 the user's XDG data directory and must not be uploaded automatically.
