@@ -1,5 +1,7 @@
 # Changelog
 
+## Unreleased
+
 ## [0.1.1] - 2026-08-22
 
 - Adopt Forge `v0.2.0` isolated runtime, fictional-state, plugin-only
