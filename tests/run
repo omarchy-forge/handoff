@@ -10,6 +10,15 @@ jq -e '
   .entryPoints.barWidget == "Panel.qml"
 ' "$repo_root/manifest.json" >/dev/null
 jq -e . "$repo_root/demo/fixtures.json" >/dev/null
+jq -e '
+  .schemaVersion == 1 and
+  (.tagline | type == "string" and length > 0) and
+  .previewPath == "assets/preview.png" and
+  .compatibility == ["omarchy-4"] and
+  (.featured | type == "boolean") and
+  (.order | type == "number")
+' "$repo_root/forge-project.json" >/dev/null
+test -f "$repo_root/$(jq -r '.previewPath' "$repo_root/forge-project.json")"
 bash -n "$repo_root/demo/run"
 bash -n "$repo_root/tests/runtime"
 grep -qF 'forgeScreenshotTarget' "$repo_root/Panel.qml"
