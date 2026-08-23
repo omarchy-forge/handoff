@@ -26,9 +26,9 @@ Handoff has no server, account, API key, telemetry, analytics, or required
 network access. It does not modify project files or Omarchy's `shell.json`.
 
 Version `0.1.1` is the current reviewed release line. Repository tags and
-GitHub releases are the authoritative record of availability. Marketplace
-submission, repository visibility, and public announcements remain separate
-decisions.
+GitHub releases are the authoritative record of availability. Handoff is
+published by the Omarchy Forge organization as an owner-built reference
+project; it is not an official Omarchy plugin.
 
 ## Requirements
 
@@ -42,14 +42,17 @@ The bar-widget setting **Show uncommitted-change status** controls whether the
 clean/dirty label is shown. Project paths and notes are managed inside Handoff
 and remain in its XDG data file rather than Omarchy configuration.
 
-## Install a reviewed local checkout
+## Install
 
 Plugins execute unsandboxed inside the long-lived Omarchy Shell process. Review
 and trust the source before enabling it.
 
 ```bash
-omarchy plugin add "$PWD" --enable
+omarchy plugin add https://github.com/omarchy-forge/handoff.git --enable
 ```
+
+For development from a reviewed local checkout, use
+`omarchy plugin add "$PWD" --enable` from the repository root instead.
 
 ## Use
 
