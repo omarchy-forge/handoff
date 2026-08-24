@@ -1,9 +1,15 @@
 # Changelog
 
-## Unreleased
+## [0.1.2] - 2026-08-24
 
 - Add owner-project catalog metadata and document installation from the public
   Omarchy Forge repository.
+- Refresh the panel with Omaforge branding, clearer project and action sections,
+  improved status treatments, and a responsive scrollable layout.
+- Add keyboard save support, enforce the 500-character note limit in the UI,
+  and show the remaining note length.
+- Keep the Handoff title precisely aligned beside the app logo across scaled
+  Omarchy layouts.
 
 ## [0.1.1] - 2026-08-22
 
