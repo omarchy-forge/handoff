@@ -23,6 +23,13 @@ bash -n "$repo_root/demo/run"
 bash -n "$repo_root/tests/runtime"
 grep -qF 'forgeScreenshotTarget' "$repo_root/Panel.qml"
 grep -qF 'function refresh()' "$repo_root/Panel.qml"
+grep -qF 'text: "OMAFORGE"' "$repo_root/Panel.qml"
+grep -qF 'text: "Handoff"' "$repo_root/Panel.qml"
+grep -qF 'images/omaforge-app-icon.png' "$repo_root/Panel.qml"
+grep -qF 'anchors.leftMargin: Style.space(4)' "$repo_root/Panel.qml"
+grep -qF 'sequence: StandardKey.Save' "$repo_root/Panel.qml"
+grep -qF 'if (length > 500)' "$repo_root/Panel.qml"
+test -f "$repo_root/images/omaforge-app-icon.png"
 
 if command -v omarchy >/dev/null 2>&1; then
   omarchy plugin validate "$repo_root"
