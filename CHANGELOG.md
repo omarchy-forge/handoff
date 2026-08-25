@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.2.0] - Unreleased
+## [0.2.0] - 2026-08-25
 
 - Rename the plugin identifier from `org.omarchyforge.handoff` to
   `omaforge.handoff`. This is a breaking change: an existing installation must
