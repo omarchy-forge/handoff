@@ -5,7 +5,7 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 jq -e '
   .schemaVersion == 1 and
-  .id == "org.omarchyforge.handoff" and
+  .id == "omaforge.handoff" and
   .kinds == ["bar-widget"] and
   .entryPoints.barWidget == "Panel.qml"
 ' "$repo_root/manifest.json" >/dev/null

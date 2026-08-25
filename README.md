@@ -98,13 +98,13 @@ but never executes the runtime harness or plugin QML.
 For a Git-managed installation:
 
 ```bash
-omarchy plugin update org.omarchyforge.handoff
+omarchy plugin update omaforge.handoff
 ```
 
 ## Removal
 
 ```bash
-omarchy plugin remove org.omarchyforge.handoff
+omarchy plugin remove omaforge.handoff
 ```
 
 Removing the plugin does not automatically delete its local state file. After

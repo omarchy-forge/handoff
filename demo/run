@@ -16,8 +16,8 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 printf 'Fictional demo state: %s\n' "$state"
 printf 'Fixture: %s\n' "$repo_root/demo/fixtures.json"
 printf '\nOpening the installed plugin and applying its in-memory demo state...\n'
-omarchy-shell "org.omarchyforge.handoff" open
-result="$(omarchy-shell "org.omarchyforge.handoff" setDemoState "$state")"
+omarchy-shell "omaforge.handoff" open
+result="$(omarchy-shell "omaforge.handoff" setDemoState "$state")"
 if [[ "$result" != "ok" ]]; then
   printf 'Could not apply demo state (shell returned %s). Is the plugin installed and enabled?\n' "$result" >&2
   exit 1
