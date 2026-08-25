@@ -8,8 +8,8 @@ import "services"
 
 Panel {
   id: root
-  moduleName: "org.omarchyforge.handoff"
-  ipcTarget: "org.omarchyforge.handoff"
+  moduleName: "omaforge.handoff"
+  ipcTarget: "omaforge.handoff"
   manageIpc: false
 
   readonly property color foreground: bar ? bar.foreground : Color.foreground

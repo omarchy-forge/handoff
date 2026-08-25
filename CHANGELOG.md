@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.0] - Unreleased
+
+- Rename the plugin identifier from `org.omarchyforge.handoff` to
+  `omaforge.handoff`. This is a breaking change: an existing installation must
+  be removed and reinstalled under the new identifier, and the bar widget must
+  be placed again.
+- Saved projects and notes are unaffected. State remains at
+  `$XDG_DATA_HOME/omarchy-handoff/state.json` in the version-1 format, which
+  has never been keyed to the plugin identifier.
+
 ## [0.1.2] - 2026-08-24
 
 - Add owner-project catalog metadata and document installation from the public

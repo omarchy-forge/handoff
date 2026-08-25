@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "org.omarchyforge.handoff",
+  "id": "omaforge.handoff",
   "name": "Handoff",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "author": "Omarchy Forge contributors",
   "license": "MIT",
   "description": "Pick up Git projects where you left off.",
