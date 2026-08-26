@@ -16,8 +16,13 @@ Item {
   property string pendingPath: ""
   property var refreshQueue: []
   property int refreshIndex: -1
+  property string refreshPath: ""
   property string statusOutput: ""
   property bool demoActive: false
+  property bool storageReady: false
+  property bool stateLoaded: false
+
+  signal pinAccepted()
 
   readonly property string home: Quickshell.env("HOME") || ""
   readonly property string dataHome: Quickshell.env("XDG_DATA_HOME") || home + "/.local/share"
@@ -25,12 +30,20 @@ Item {
   readonly property string statePath: dataDir + "/state.json"
   readonly property var selectedProject:
     selectedIndex >= 0 && selectedIndex < projects.length ? projects[selectedIndex] : null
+  readonly property bool validating: validateProcess.running
   readonly property string statusLabel: refreshing ? "Refreshing Git state"
-    : projects.length === 0 ? "No projects pinned"
-    : projects.length === 1 ? "1 pinned project"
-    : projects.length + " pinned projects"
+    : projects.length === 0 ? "No saved projects"
+    : projects.length === 1 ? "1 saved project"
+    : projects.length + " saved projects"
 
   function clone(value) { return JSON.parse(JSON.stringify(value)) }
+
+  function projectIndexForPath(path) {
+    for (var i = 0; i < projects.length; i++) {
+      if (projects[i].path === path) return i
+    }
+    return -1
+  }
 
   function gitCommand(path, arguments_) {
     return [
@@ -92,16 +105,17 @@ Item {
   }
 
   function load(raw) {
-    if (demoActive) return
+    if (demoActive || stateLoaded) return
+    stateLoaded = true
     var loaded = []
     var source = String(raw || "").trim()
     try {
       var parsed = source === "" ? { version: 1, projects: [] } : JSON.parse(source)
-      if (parsed && parsed.version === 1 && Array.isArray(parsed.projects)) {
-        for (var i = 0; i < parsed.projects.length; i++) {
-          var project = normalizedProject(parsed.projects[i])
-          if (project) loaded.push(project)
-        }
+      if (!parsed || parsed.version !== 1 || !Array.isArray(parsed.projects))
+        throw new Error("unsupported state format")
+      for (var i = 0; i < parsed.projects.length; i++) {
+        var project = normalizedProject(parsed.projects[i])
+        if (project) loaded.push(project)
       }
     } catch (error) {
       lastError = "Could not read saved Handoff data. The file was left untouched."
@@ -140,6 +154,10 @@ Item {
       notice = "Enter a project directory."
       return
     }
+    if (candidate.charAt(0) !== "/") {
+      notice = "Enter an absolute path or a path beginning with ~/."
+      return
+    }
     if (validateProcess.running) return
     pendingPath = candidate
     notice = "Checking Git project…"
@@ -157,7 +175,8 @@ Item {
     for (var i = 0; i < projects.length; i++) {
       if (projects[i].path === canonical) {
         selectedIndex = i
-        notice = "Project is already pinned."
+        notice = "Project is already saved in Handoff."
+        pinAccepted()
         return
       }
     }
@@ -170,7 +189,8 @@ Item {
     projects = next
     selectedIndex = next.length - 1
     state = "ready"
-    notice = "Project pinned locally."
+    notice = "Project added to Handoff."
+    pinAccepted()
     persist()
     refreshOne(selectedIndex)
   }
@@ -198,18 +218,20 @@ Item {
 
   function refreshOne(index) {
     if (index < 0 || index >= projects.length) return
+    var path = projects[index].path
     if (refreshing) {
-      refreshQueue = refreshQueue.concat([index])
+      if (refreshQueue.indexOf(path) < 0 && refreshPath !== path)
+        refreshQueue = refreshQueue.concat([path])
       return
     }
-    refreshQueue = [index]
+    refreshQueue = [path]
     beginNextRefresh()
   }
 
   function refreshAll() {
     if (demoActive || refreshing || projects.length === 0) return
     var queue = []
-    for (var i = 0; i < projects.length; i++) queue.push(i)
+    for (var i = 0; i < projects.length; i++) queue.push(projects[i].path)
     refreshQueue = queue
     beginNextRefresh()
   }
@@ -218,16 +240,21 @@ Item {
     if (refreshQueue.length === 0) {
       refreshing = false
       refreshIndex = -1
+      refreshPath = ""
       persist()
       return
     }
     refreshing = true
-    refreshIndex = refreshQueue[0]
+    refreshPath = refreshQueue[0]
     refreshQueue = refreshQueue.slice(1)
+    refreshIndex = projectIndexForPath(refreshPath)
+    if (refreshIndex < 0) {
+      beginNextRefresh()
+      return
+    }
     statusOutput = ""
-    var project = projects[refreshIndex]
     statusProcess.output = ""
-    statusProcess.command = gitCommand(project.path, ["status", "--porcelain=v2", "--branch"])
+    statusProcess.command = gitCommand(refreshPath, ["status", "--porcelain=v2", "--branch"])
     statusProcess.running = true
   }
 
@@ -240,22 +267,30 @@ Item {
       if (lines[i].indexOf("# branch.head ") === 0) branch = lines[i].slice(14).trim()
       else if (lines[i] !== "" && lines[i].charAt(0) !== "#") dirty = true
     }
+    var index = projectIndexForPath(refreshPath)
+    if (index < 0) return false
     var next = clone(projects)
-    next[refreshIndex].branch = branch === "(detached)" ? "detached HEAD" : branch
-    next[refreshIndex].dirty = dirty
-    next[refreshIndex].checkedAt = new Date().toISOString()
+    next[index].branch = branch === "(detached)" ? "detached HEAD" : branch
+    next[index].dirty = dirty
+    next[index].checkedAt = new Date().toISOString()
     projects = next
+    return true
   }
 
   function applyLog(text) {
     var fields = String(text || "").trim().split("\u001f")
+    var index = projectIndexForPath(refreshPath)
+    if (index < 0) {
+      beginNextRefresh()
+      return
+    }
     var next = clone(projects)
     if (fields.length >= 3) {
-      next[refreshIndex].commit = fields[0]
-      next[refreshIndex].commitSubject = fields[1]
-      next[refreshIndex].commitAt = fields[2]
+      next[index].commit = fields[0]
+      next[index].commitSubject = fields[1]
+      next[index].commitAt = fields[2]
     }
-    next[refreshIndex].checkedAt = new Date().toISOString()
+    next[index].checkedAt = new Date().toISOString()
     projects = next
     beginNextRefresh()
   }
@@ -263,7 +298,15 @@ Item {
   Process {
     id: ensureDirProcess
     command: ["mkdir", "-p", root.dataDir]
-    onExited: stateFile.reload()
+    onExited: function(exitCode) {
+      if (exitCode !== 0) {
+        root.lastError = "Could not prepare Handoff's local data directory."
+        root.state = "error"
+        return
+      }
+      root.storageReady = true
+      stateFile.reload()
+    }
   }
 
   FileView {
@@ -272,9 +315,13 @@ Item {
     watchChanges: false
     atomicWrites: true
     printErrors: false
-    onLoaded: root.load(text())
-    onLoadFailed: root.load("")
+    onLoaded: if (root.storageReady) root.load(text())
+    onLoadFailed: if (root.storageReady) root.load("")
     onFileChanged: reload()
+    onSaveFailed: function(error) {
+      root.lastError = "Could not save Handoff data. Your current session is unchanged."
+      root.notice = root.lastError
+    }
   }
 
   Process {
@@ -298,24 +345,20 @@ Item {
       onStreamFinished: statusProcess.output = text
     }
     onExited: function(exitCode) {
-      if (root.refreshIndex < 0 || root.refreshIndex >= root.projects.length) {
-        root.refreshing = false
-        root.refreshQueue = []
-        return
-      }
+      var index = root.projectIndexForPath(root.refreshPath)
+      if (index < 0) { root.beginNextRefresh(); return }
       if (exitCode !== 0) {
         var next = root.clone(root.projects)
-        next[root.refreshIndex].branch = "unavailable"
-        next[root.refreshIndex].dirty = false
-        next[root.refreshIndex].checkedAt = new Date().toISOString()
+        next[index].branch = "unavailable"
+        next[index].dirty = false
+        next[index].checkedAt = new Date().toISOString()
         root.projects = next
         root.beginNextRefresh()
         return
       }
-      root.applyStatus(output)
-      var project = root.projects[root.refreshIndex]
+      if (!root.applyStatus(output)) { root.beginNextRefresh(); return }
       logProcess.output = ""
-      logProcess.command = root.gitCommand(project.path,
+      logProcess.command = root.gitCommand(root.refreshPath,
         ["log", "-1", "--format=%H%x1f%s%x1f%cI"])
       logProcess.running = true
     }
@@ -329,9 +372,8 @@ Item {
       onStreamFinished: logProcess.output = text
     }
     onExited: function(exitCode) {
-      if (root.refreshIndex < 0 || root.refreshIndex >= root.projects.length) {
-        root.refreshing = false
-        root.refreshQueue = []
+      if (root.projectIndexForPath(root.refreshPath) < 0) {
+        root.beginNextRefresh()
         return
       }
       if (exitCode === 0) root.applyLog(output)

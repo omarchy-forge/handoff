@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased]
+
+- Keep newly pinned projects visible by preventing duplicate startup state loads
+  from replacing live state, and retain invalid path input for correction.
+- Make Git refreshes resilient to projects being pinned or unpinned while a
+  refresh is running.
+- Reject undocumented relative paths, preserve unsupported state formats, and
+  surface local persistence failures in the panel.
+- Add isolated runtime coverage for pinning a real Git working tree.
+- Explain Handoff's resume-work purpose in the panel and replace ambiguous
+  Pin/Unpin labels with Add project/Remove language.
+
 ## [0.2.0] - 2026-08-25
 
 - Rename the plugin identifier from `org.omarchyforge.handoff` to

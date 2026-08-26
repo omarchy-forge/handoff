@@ -34,6 +34,10 @@ Panel {
     noteArea.text = project ? project.note : ""
 
   DataService { id: handoff; settings: root.settings }
+  Connections {
+    target: handoff
+    function onPinAccepted() { pathField.text = "" }
+  }
   Process { id: terminalProcess }
 
   function openProject() {
@@ -44,6 +48,9 @@ Panel {
   }
   function setDemoState(state) { return handoff.setDemoState(state) }
   function refresh() { handoff.refreshAll() }
+  function forgeTestPin(path) { handoff.pin(path) }
+  readonly property int forgeTestProjectCount: handoff.projects.length
+  readonly property string forgeTestState: handoff.state
 
   IpcHandler {
     target: root.ipcTarget
@@ -160,7 +167,8 @@ Panel {
               anchors.right: closeButton.left
               anchors.rightMargin: Style.space(12)
               anchors.verticalCenter: parent.verticalCenter
-              text: handoff.projects.length + " pinned  ●"
+              text: handoff.projects.length === 1 ? "1 project  ●"
+                : handoff.projects.length + " projects  ●"
               color: root.foreground
               font.family: root.fontFamily
               font.pixelSize: Style.font.body
@@ -184,6 +192,16 @@ Panel {
           PanelSeparator { foreground: root.foreground }
 
           Text {
+            width: parent.width
+            text: "Add a Git project to remember its branch, changes, latest commit, and what to do next."
+            color: Qt.darker(root.foreground, 1.25)
+            font.family: root.fontFamily
+            font.pixelSize: Style.font.body
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
+          }
+
+          Text {
             visible: handoff.state === "loading"
             width: parent.width
             text: "Loading saved projects…"
@@ -195,7 +213,7 @@ Panel {
           Text {
             visible: handoff.state === "empty"
             width: parent.width
-            text: "No projects pinned yet. Add a Git project to create its first handoff."
+            text: "No saved projects yet."
             color: Qt.darker(root.foreground, 1.35)
             font.family: root.fontFamily
             font.pixelSize: Style.font.body
@@ -215,7 +233,7 @@ Panel {
 
           Text {
             width: parent.width
-            text: "PIN A GIT PROJECT"
+            text: "ADD A GIT PROJECT"
             color: Qt.darker(root.foreground, 1.25)
             font.family: root.fontFamily
             font.pixelSize: Style.font.body
@@ -237,7 +255,9 @@ Panel {
             }
             Button {
               id: pinButton
-              text: "Pin"
+              text: handoff.validating ? "Checking…" : "Add project"
+              enabled: !handoff.validating
+              opacity: enabled ? 1 : 0.65
               foreground: root.foreground
               accent: root.brandOrange
               active: true
@@ -245,7 +265,6 @@ Panel {
               horizontalPadding: Style.space(18)
               onClicked: {
                 handoff.pin(pathField.text)
-                pathField.text = ""
               }
             }
           }
@@ -262,7 +281,7 @@ Panel {
           Text {
             visible: handoff.projects.length > 0
             width: parent.width
-            text: "PINNED PROJECTS"
+            text: "SAVED PROJECTS"
             color: Qt.darker(root.foreground, 1.35)
             font.family: root.fontFamily
             font.pixelSize: Style.font.body
@@ -304,7 +323,7 @@ Panel {
                   Layout.preferredWidth: Style.space(9)
                   Layout.preferredHeight: Style.space(9)
                   radius: width / 2
-                  color: modelData.branch === "unavailable" ? Color.urgent : "#55d878"
+                  color: modelData.branch === "unavailable" ? Color.urgent : root.accent
                 }
                 ColumnLayout {
                   Layout.fillWidth: true
@@ -332,7 +351,7 @@ Panel {
                     Text {
                       visible: root.showDirtyIndicator
                       text: modelData.dirty ? "Uncommitted changes" : "Clean"
-                      color: modelData.dirty ? root.brandOrange : "#55d878"
+                      color: modelData.dirty ? root.brandOrange : root.accent
                       font.family: root.fontFamily
                       font.pixelSize: Style.font.bodySmall
                     }
@@ -494,7 +513,7 @@ Panel {
               }
               Button {
                 width: (parent.width - parent.spacing * 2) / 3
-                text: "Unpin"
+                text: "Remove"
                 foreground: Qt.darker(root.foreground, 1.35)
                 fontFamily: root.fontFamily
                 onClicked: handoff.removeSelected()

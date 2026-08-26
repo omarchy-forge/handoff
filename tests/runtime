@@ -2,17 +2,19 @@
 set -euo pipefail
 
 if [[ ${1:-} != "--trust-plugin-code" ]]; then
-  echo "Usage: ./tests/runtime --trust-plugin-code [--state ready|empty|error]" >&2
+  echo "Usage: ./tests/runtime --trust-plugin-code [--state ready|empty|error | --pin-path /absolute/git/worktree]" >&2
   echo "This test executes the plugin's QML and local commands. Review the code first." >&2
   exit 2
 fi
 
 state=""
+pin_path=""
 screenshot=""
 shift
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --state) state="${2:-}"; shift 2 ;;
+    --pin-path) pin_path="${2:-}"; shift 2 ;;
     --screenshot) screenshot="${2:-}"; shift 2 ;;
     *) echo "unexpected runtime argument: $1" >&2; exit 2 ;;
   esac
@@ -21,6 +23,12 @@ case "$state" in
   ""|ready|empty|error) ;;
   *) echo "runtime state must be ready, empty, or error" >&2; exit 2 ;;
 esac
+if [[ -n "$pin_path" ]]; then
+  [[ -z "$state" && "$pin_path" = /* && -d "$pin_path/.git" ]] || {
+    echo "pin test requires --pin-path with an absolute Git working tree and no --state" >&2
+    exit 2
+  }
+fi
 if [[ -n "$screenshot" ]]; then
   [[ "$state" != "" && "$screenshot" = /* && "$screenshot" == *.png ]] || {
     echo "screenshot requires a state and an absolute .png output" >&2; exit 2;
@@ -98,6 +106,7 @@ XDG_CACHE_HOME="$runtime_root/cache" \
 XDG_RUNTIME_DIR="$runtime_root/runtime" \
 WAYLAND_DISPLAY="$wayland_display" \
 OMAFORGE_DEV_STATE="$state" \
+OMAFORGE_PIN_PATH="$pin_path" \
 OMAFORGE_SCREENSHOT_PATH="$screenshot" \
 NO_COLOR=1 \
 setsid timeout 12 quickshell --no-color --path "$runtime_root/config/shell.qml" >"$output_file" 2>&1 &
@@ -111,6 +120,8 @@ for _ in {1..100}; do
     if [[ -n "$screenshot" ]]; then
       test -s "$screenshot" || { echo "runtime did not create screenshot" >&2; exit 1; }
       echo "isolated plugin screenshot passed: $state"
+    elif [[ -n "$pin_path" ]]; then
+      echo "isolated pin persistence test passed"
     elif [[ -n "$state" ]]; then
       echo "isolated Quickshell runtime state passed: $state"
     else

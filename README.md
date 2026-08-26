@@ -2,9 +2,10 @@
 
 Pick up Git projects where you left off.
 
-Handoff is a local-first Omarchy bar widget for pinning projects, recording one
-clear next step, seeing current Git context, and reopening the project in a
-terminal. It is the flagship reference plugin built with Omarchy Forge.
+Handoff is a local-first Omarchy bar widget for remembering where you stopped
+across Git projects. It saves one clear next step alongside the current Git
+context and reopens the project in a terminal when you are ready to continue.
+It is the flagship reference plugin built with Omarchy Forge.
 
 Handoff is an independent community project. It is not affiliated with or
 endorsed by Omarchy, Basecamp, 37signals, or DHH.
@@ -13,8 +14,8 @@ endorsed by Omarchy, Basecamp, 37signals, or DHH.
 
 ## MVP features
 
-- Pin a project by entering its local directory.
-- Save one next-step note per pinned project.
+- Add a project by entering its local directory.
+- Save one next-step note per project.
 - Show the branch, clean/dirty state, latest commit subject, and check time.
 - Open the selected project in the configured terminal.
 - Persist data atomically under
@@ -25,7 +26,7 @@ endorsed by Omarchy, Basecamp, 37signals, or DHH.
 Handoff has no server, account, API key, telemetry, analytics, or required
 network access. It does not modify project files or Omarchy's `shell.json`.
 
-Version `0.1.2` is the current reviewed release line. Repository tags and
+Version `0.2.0` is the current reviewed release line. Repository tags and
 GitHub releases are the authoritative record of availability. Handoff is
 published by the Omarchy Forge organization as an owner-built reference
 project; it is not an official Omarchy plugin.
@@ -58,14 +59,15 @@ For development from a reviewed local checkout, use
 
 1. Open Handoff from the bar.
 2. Enter an absolute project path or a path beginning with `~/`, then select
-   **Pin**.
-3. Select a pinned project and write its next step.
+   **Add project**. Handoff records the project locally; it does not modify Git.
+3. Select a saved project and write its next step.
 4. Select **Save note** or **Open terminal**.
 
 Right-click the bar icon or press `R` while the panel is focused to refresh Git
 metadata. Press `Enter` to open the selected project and `Esc` to close.
 
-Unpinning removes only Handoff's record. It never deletes or edits the project.
+Removing a project deletes only Handoff's record. It never deletes or edits the
+project or changes the Git repository.
 
 ## Development
 
@@ -77,7 +79,7 @@ Unpinning removes only Handoff's record. It never deletes or edits the project.
 omaforge dev . --trust-plugin-code --state ready
 omaforge dev . --trust-plugin-code --state ready --watch
 omaforge screenshot . --trust-plugin-code --state ready --output /tmp/handoff-preview.png
-./scripts/release-check 0.1.2
+./scripts/release-check 0.2.0
 ```
 
 The demo uses fictional in-memory records through shell IPC. It does not write

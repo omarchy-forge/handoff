@@ -19,6 +19,16 @@ ShellRoot {
       return
     }
     plugin.settings = ({})
+    var pinPath = Quickshell.env("OMAFORGE_PIN_PATH") || ""
+    if (pinPath !== "") {
+      if (typeof plugin.forgeTestPin !== "function") {
+        fail("entry point has no isolated pin test hook")
+        return
+      }
+      pinWaitTimer.pinPath = pinPath
+      pinWaitTimer.start()
+      return
+    }
     var state = Quickshell.env("OMAFORGE_DEV_STATE") || ""
     if (state !== "") {
       if (typeof plugin.setDemoState !== "function") {
@@ -79,5 +89,27 @@ ShellRoot {
     id: settleTimer
     interval: 750
     onTriggered: root.finish()
+  }
+
+  Timer {
+    id: pinWaitTimer
+    property string pinPath: ""
+    property bool pinStarted: false
+    property int checks: 0
+    interval: 100
+    repeat: true
+    onTriggered: {
+      checks++
+      if (!pinStarted && plugin.forgeTestState !== "loading") {
+        pinStarted = true
+        plugin.forgeTestPin(pinPath)
+      } else if (pinStarted && plugin.forgeTestProjectCount === 1 && checks >= 10) {
+        stop()
+        root.finish()
+      } else if (checks >= 50) {
+        stop()
+        root.fail("pin did not remain visible")
+      }
+    }
   }
 }
